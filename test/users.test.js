@@ -11,6 +11,19 @@ describe("GET /", () => {
 
   beforeEach(async () => {
 
+		db.mongoose
+				.connect('mongodb://localhost:27017/db_tes', {
+					useNewUrlParser: true,
+					useUnifiedTopology: true
+				})
+				.then(() => {
+					// console.log("Connected to the database!");
+				})
+				.catch(err => {
+					// console.log("Cannot connect to the database!", err);
+					process.exit();
+				});
+
     await db.users.deleteMany({})
 
     const users = new db.users({
@@ -44,19 +57,70 @@ describe("GET /", () => {
     const response = await request(app).get("/api/users").set('Authorization', `Bearer ${TOKEN}`).send({})
     .expect(200)
     .expect("Content-Type", /json/);
-    // console.log(response.body)
   })
 
   test("users find id", async () => {
 
     let users = await db.users.find({});
     
-    expect(users.length).toBeDefined();
+    expect(users[0].id).toBeDefined();
     users = users[0]
 
-    const response = await request(app).get("/api/users").set('Authorization', `Bearer ${TOKEN}`).send({})
+    const response = await request(app).get("/api/users/"+users.id).set('Authorization', `Bearer ${TOKEN}`).send({})
     .expect(200)
     .expect("Content-Type", /json/);
-    // console.log(response.body)
+  })
+
+  test("users find id not found", async () => {
+
+    const response = await request(app).get("/api/users/111").set('Authorization', `Bearer ${TOKEN}`).send({})
+    .expect(404)
+    .expect("Content-Type", /json/);
+  })
+
+  test("users create", async () => {
+		let data = {
+			username: 'admin1',
+			password: '123456'
+		}
+    const response = await request(app).post("/api/users").set('Authorization', `Bearer ${TOKEN}`).send(data)
+    .expect(200)
+    .expect("Content-Type", /json/);
+  })
+
+  test("users create no username", async () => {
+		let data = {
+			password: '123456'
+		}
+    const response = await request(app).post("/api/users").set('Authorization', `Bearer ${TOKEN}`).send(data)
+    .expect(422)
+    .expect("Content-Type", /json/);
+  })
+
+  test("users create no password", async () => {
+		let data = {
+			username: 'admin1',
+		}
+    const response = await request(app).post("/api/users").set('Authorization', `Bearer ${TOKEN}`).send(data)
+    .expect(422)
+    .expect("Content-Type", /json/);
+  })
+
+  test("users update", async () => {
+
+		let users = await db.users.find({});
+    expect(users[0].id).toBeDefined();
+    users = users[0]
+		let rand = Math.random();
+		let data = {
+			// username: 'admintes123'+rand,
+		}
+
+    const response = await request(app).put("/api/users/"+users.id).set('Authorization', `Bearer ${TOKEN}`).send(data)
+    .expect(200)
+    .expect("Content-Type", /json/);
+
+		users = await db.users.findById(users.id);
+		expect(users.username).toBe('admintes123'+rand)
   })
 })

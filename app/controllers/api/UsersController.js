@@ -1,5 +1,6 @@
 import db from '../../models';
 import bcrypt from 'bcrypt';
+import { validationResult } from 'express-validator';
 
 export default class UsersController {
 
@@ -34,7 +35,7 @@ export default class UsersController {
 							else res.send(data);
 						})
 						.catch(err => {
-							res.status(500).send({
+							res.status(404).send({
 								message:
 									err.message || "Some error occurred while retrieving tutorials."
 							});
@@ -43,6 +44,12 @@ export default class UsersController {
 	}
 	
 	static async store(req, res) {
+
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(422).json({ errors: errors.array() });
+		}
+
 
 		let username = req.body.username;
 		let password = req.body.password;
@@ -60,7 +67,7 @@ export default class UsersController {
 
 		users.save(users)
 				.then(data => {
-					console.log(data);
+					// console.log(data);
 					res.send(data)
 				})
 				.catch(err => {

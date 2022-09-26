@@ -27,7 +27,10 @@ router.use('/api', userMiddleware.checkApi);
 
 router.get("/api/users", route('api/UsersController@getData'))
 router.get("/api/users/:id", route('api/UsersController@getOneData'))
-router.post("/api/users", route('api/UsersController@store'))
+router.post("/api/users", [
+  check('username').isLength({ min: 2 }),
+  check('password').exists(),
+], route('api/UsersController@store'))
 router.put("/api/users/:id", route('api/UsersController@update'))
 router.delete("/api/users/:id", route('api/UsersController@delete'))
 router.delete("/api/users", route('api/UsersController@deleteAll'))
