@@ -1,60 +1,76 @@
-import jwt from 'jsonwebtoken'
-import { validationResult } from 'express-validator';
-import db from '../../models';
-import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+import {
+	validationResult
+} from "express-validator";
+import db from "../../models";
+import bcrypt from "bcrypt";
 
-export default class LoginController{
-
+export default class LoginController {
 	static async login(req, res) {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(422).json({ errors: errors.array() });
+			return res.status(422).json({
+				errors: errors.array(),
+			});
 		}
 
-		let user = await db.users.find({username: req.body.username});
-		if(user.length != 1) return res.status(400).send({
-			message: 'username tidak ditemukan',
-			status: false,
+		let user = await db.users.find({
+			username: req.body.username,
 		});
+		if (user.length != 1)
+			return res.status(400).send({
+				message: "username tidak ditemukan",
+				status: false,
+			});
 
-		if(!bcrypt.compareSync(req.body.password, user[0].password)) return res.status(400).send({
-			message: 'password salah!',
-			status: false,
-		});
-		
+		if (!bcrypt.compareSync(req.body.password, user[0].password))
+			return res.status(400).send({
+				message: "password salah!",
+				status: false,
+			});
+
 		var token = jwt.sign({
-			username: user[0].username,
-			id: user[0].id,
-		}, process.env.JWT_SECRET_KEY);
+				username: user[0].username,
+				id: user[0].id,
+			},
+			process.env.JWT_SECRET_KEY
+		);
 		res.send({
-			message: 'berhasil login',
+			message: "berhasil login",
 			status: true,
 			token: token,
 		});
 	}
 
-	static cekLogin(req, res){
-		let bearerHeader = req.header('authorization');
-		if(typeof bearerHeader === 'undefined') return res.status(404).send({ message: 'No credentials sent!' })
+	static cekLogin(req, res) {
+		let bearerHeader = req.header("authorization");
+		if (typeof bearerHeader === "undefined")
+			return res.status(404).send({
+				message: "No credentials sent!",
+			});
 
-		let bearer = bearerHeader.split(' ');
-		if(bearer.length != 2) return res.status(404).send({ message: 'Bearer invalid' })
+		let bearer = bearerHeader.split(" ");
+		if (bearer.length != 2)
+			return res.status(404).send({
+				message: "Bearer invalid",
+			});
 
 		bearer = bearer[1];
-		let decoded = '';
-		try{
+		let decoded = "";
+		try {
 			decoded = jwt.verify(bearer, process.env.JWT_SECRET_KEY);
-		}catch(err){
-			return res.status(500).send({ message: err.message })
+		} catch (err) {
+			return res.status(500).send({
+				message: err.message,
+			});
 		}
 
 		return res.send({
-			message: 'credentials valid!', 
+			message: "credentials valid!",
 			session: {
 				username: decoded.username,
-				id: decoded.id
-			}
+				id: decoded.id,
+			},
 		});
 	}
-
 }

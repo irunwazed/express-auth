@@ -1,6 +1,6 @@
 import app from './app'
-
 import db from './models';
+
 db.mongoose
   .connect(db.url, {
     useNewUrlParser: true,
