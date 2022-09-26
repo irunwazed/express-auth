@@ -35,13 +35,13 @@ export default class UsersController {
 			.findById(id)
 			.then((data) => {
 				if (!data)
-					res.status(404).send({
+					res.status(400).send({
 						message: "Not found Tutorial with id " + id,
 					});
 				else res.send(data);
 			})
 			.catch((err) => {
-				res.status(404).send({
+				res.status(500).send({
 					message: err.message || "Some error occurred while retrieving tutorials.",
 				});
 			});
@@ -85,14 +85,12 @@ export default class UsersController {
 
 	static async update(req, res) {
 		let username = req.body.username;
-		let password = req.body.password;
 		let id = req.params.id;
 
 		db.users
 			.findByIdAndUpdate(
 				id, {
 					username,
-					password,
 				}, {
 					useFindAndModify: false,
 				}
@@ -121,7 +119,7 @@ export default class UsersController {
 			.findByIdAndRemove(id)
 			.then((data) => {
 				if (!data) {
-					res.status(404).send({
+					res.status(400).send({
 						message: `Cannot delete Users with id=${id}. Maybe Users was not found!`,
 					});
 				} else {
@@ -150,5 +148,62 @@ export default class UsersController {
 					message: err.message || "Some error occurred while removing all Users.",
 				});
 			});
+	}
+
+	static async changePassword(req, res){
+		let session = req.setSession;
+		let password = req.body.password;
+		let passwordReset = req.body.passwordReset;
+		let passwordResetValid = req.body.passwordResetValid;
+
+		if(password == passwordResetValid) return res.status(412).send({
+			message: "Password same with new password!",
+		}); 
+
+		if(passwordReset != passwordResetValid) return res.status(412).send({
+			message: "Password reset not same!",
+		}); 
+
+		let user = await db.users.findById(session.id);
+		let userAll = await db.users.find({});
+
+		// console.log(session);
+		// console.log(user);
+		// console.log(userAll);
+		
+		// return res.status(200).send({
+		// 	message: "Change user success!",
+		// });
+
+		if(!user.id) return res.status(401).send({
+			message: "User not found. please login again!",
+		});
+
+		if (!bcrypt.compareSync(password, user.password)) return res.status(401).send({
+			message: "wrong password!",
+		});
+		console.log(password)
+		console.log(user.password)
+
+		try{
+			let status = await db.users.findByIdAndUpdate(session.id, {
+				password: bcrypt.hashSync(passwordReset, 10),
+			}, {
+				useFindAndModify: false,
+			});
+
+			if(!status) return res.status(401).send({
+				message: "Change user fail!",
+			});
+			return res.status(200).send({
+				message: "Change user success!",
+			});
+		}catch(err){
+			return res.status(500).send({
+				message: "User cancel change password!",
+			});
+		}
+		
+		
 	}
 }

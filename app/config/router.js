@@ -24,6 +24,7 @@ router.post("/api/login", [
 ], route('api/LoginController@login'))
 router.get("/api/cek-login", route('api/LoginController@cekLogin'))
 router.use('/api', userMiddleware.checkApi);
+router.put("/api/change-password", route('api/UsersController@changePassword'))
 
 router.get("/api/users", route('api/UsersController@getData'))
 router.get("/api/users/:id", route('api/UsersController@getOneData'))
@@ -31,7 +32,9 @@ router.post("/api/users", [
   check('username').isLength({ min: 2 }),
   check('password').exists(),
 ], route('api/UsersController@store'))
-router.put("/api/users/:id", route('api/UsersController@update'))
+router.put("/api/users/:id", [
+  check('username').isLength({ min: 2 }),
+], route('api/UsersController@update'))
 router.delete("/api/users/:id", route('api/UsersController@delete'))
 router.delete("/api/users", route('api/UsersController@deleteAll'))
 // . Api

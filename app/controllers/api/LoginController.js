@@ -19,13 +19,13 @@ export default class LoginController {
 		});
 		if (user.length != 1)
 			return res.status(400).send({
-				message: "username tidak ditemukan",
+				message: "username not found!",
 				status: false,
 			});
 
 		if (!bcrypt.compareSync(req.body.password, user[0].password))
 			return res.status(400).send({
-				message: "password salah!",
+				message: "wrong password!",
 				status: false,
 			});
 
@@ -36,7 +36,7 @@ export default class LoginController {
 			process.env.JWT_SECRET_KEY
 		);
 		res.send({
-			message: "berhasil login",
+			message: "login success!",
 			status: true,
 			token: token,
 		});
@@ -52,7 +52,7 @@ export default class LoginController {
 		let bearer = bearerHeader.split(" ");
 		if (bearer.length != 2)
 			return res.status(404).send({
-				message: "Bearer invalid",
+				message: "Bearer is invalid",
 			});
 
 		bearer = bearer[1];
@@ -66,7 +66,7 @@ export default class LoginController {
 		}
 
 		return res.send({
-			message: "credentials valid!",
+			message: "credentials is valid!",
 			session: {
 				username: decoded.username,
 				id: decoded.id,

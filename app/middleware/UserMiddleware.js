@@ -11,12 +11,12 @@ export default {
     if (except.indexOf(req.originalUrl) >= 0) next();
 
     let bearerHeader = req.header('authorization');
-    if (typeof bearerHeader === 'undefined') return res.status(404).send({
+    if (typeof bearerHeader === 'undefined') return res.status(401).send({
       message: 'No credentials sent!'
     })
 
     let bearer = bearerHeader.split(' ');
-    if (bearer.length != 2) return res.status(404).send({
+    if (bearer.length != 2) return res.status(400).send({
       message: 'Bearer invalid'
     })
 
@@ -24,8 +24,9 @@ export default {
     let decoded = '';
     try {
       decoded = jwt.verify(bearer, process.env.JWT_SECRET_KEY);
+      req.setSession = decoded
     } catch (err) {
-      return res.status(500).send({
+      return res.status(502).send({
         message: err.message
       })
     }

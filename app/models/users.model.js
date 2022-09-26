@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+import mongoose from "mongoose";
 
 module.exports = mongoose => {
   const schema = mongoose.Schema(
