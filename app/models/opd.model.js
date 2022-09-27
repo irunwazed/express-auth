@@ -3,18 +3,13 @@ import mongoose from "mongoose";
 module.exports = mongoose => {
   const schema = mongoose.Schema(
     {
-      username: {
+      opd_nama: {
 				type: String,
 				required: true,
 			},
-      password: {
-				type: String,
-				required: true,
-			},
-      level: Number,
-      profil: {
-        name: String,
-        nik: String,
+      pimpinan: {
+        nama: String,
+        nip: String,
       }
     },
     { timestamps: true }
@@ -26,7 +21,7 @@ module.exports = mongoose => {
     return object;
   });
 
-  const Users = mongoose.model('login', schema);
+  const Opd = mongoose.model('opd', schema);
 
-  return Users
+  return Opd
 }

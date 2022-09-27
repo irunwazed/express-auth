@@ -9,5 +9,8 @@ db.url = dbConfig.url;
 
 // list of models
 db.users = require('./users.model.js')(mongoose)
+db.opd = require('./opd.model.js')(mongoose)
+db.pegawai = require('./pegawai.model.js')(mongoose)
+db.pegawai_opd = require('./pegawai_opd.model.js')(mongoose)
 
 module.exports = db

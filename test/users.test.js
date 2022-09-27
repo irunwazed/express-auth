@@ -42,6 +42,15 @@ describe("GET /", () => {
               .catch(err => {
                 console.log(err.message)
               });
+
+		const response = await request(app).post("/api/login").send({
+			username: user.username,
+			password: password
+		})
+		.expect(200)
+		.expect("Content-Type", /json/);
+		expect(response.body.token).toBeDefined();
+		TOKEN = response.body.token;
   });
 
   test("login users", async () => {
@@ -52,8 +61,7 @@ describe("GET /", () => {
     .expect(200)
     .expect("Content-Type", /json/);
     expect(response.body.token).toBeDefined();
-    TOKEN = response.body.token;
-    console.log(TOKEN);
+    // TOKEN = response.body.token;
   })
 
   test("users", async () => {
@@ -82,6 +90,9 @@ describe("GET /", () => {
   })
 
   test("users create", async () => {
+
+		let users = await db.users.find({});
+
 		let data = {
 			username: 'admin1',
 			password: password
@@ -89,6 +100,16 @@ describe("GET /", () => {
     const response = await request(app).post("/api/users").set('Authorization', `Bearer ${TOKEN}`).send(data)
     .expect(200)
     .expect("Content-Type", /json/);
+
+		let users2 = await db.users.find({});
+		expect(users2.length - 1).toBe(users.length);
+
+    await request(app).post("/api/users").set('Authorization', `Bearer ${TOKEN}`).send(data)
+    .expect(200)
+    .expect("Content-Type", /json/);
+
+		users2 = await db.users.find({});
+		expect(users2.length - 2).toBe(users.length);
   })
 
   test("users create no username", async () => {
@@ -127,17 +148,13 @@ describe("GET /", () => {
 		expect(users.username).toBe('admintes123'+rand)
   })
   
-  
-  
-
   test("users change password", async () => {
     
     let data = {
-      password: password+'12',
+      password: password,
       passwordReset: '1234567',
       passwordResetValid: '1234567',
     }
-    console.log(TOKEN);
     
     const response = await request(app).put("/api/change-password").set('Authorization', `Bearer ${TOKEN}`).send(data)
     .expect(200)

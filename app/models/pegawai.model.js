@@ -1,21 +1,14 @@
 import mongoose from "mongoose";
+var Schema = mongoose.Schema;
 
 module.exports = mongoose => {
   const schema = mongoose.Schema(
     {
-      username: {
+      nama: {
 				type: String,
 				required: true,
 			},
-      password: {
-				type: String,
-				required: true,
-			},
-      level: Number,
-      profil: {
-        name: String,
-        nik: String,
-      }
+      login_id: {type: Schema.Types.ObjectId, ref: 'login', unique: true},
     },
     { timestamps: true }
   );
@@ -26,7 +19,7 @@ module.exports = mongoose => {
     return object;
   });
 
-  const Users = mongoose.model('login', schema);
+  const Pegawai = mongoose.model('pegawai', schema);
 
-  return Users
+  return Pegawai
 }

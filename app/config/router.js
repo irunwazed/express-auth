@@ -37,6 +37,18 @@ router.put("/api/users/:id", [
 ], route('api/UsersController@update'))
 router.delete("/api/users/:id", route('api/UsersController@delete'))
 router.delete("/api/users", route('api/UsersController@deleteAll'))
+
+
+router.get("/api/pegawai", route('api/PegawaiController@getData'))
+router.get("/api/pegawai/:id", route('api/PegawaiController@getOneData'))
+router.post("/api/pegawai", [
+  check('nama').isLength({ min: 2 }),
+], route('api/PegawaiController@store'))
+router.put("/api/pegawai/:id", [
+  check('nama').isLength({ min: 2 }),
+], route('api/PegawaiController@update'))
+router.delete("/api/pegawai/:id", route('api/PegawaiController@delete'))
+router.delete("/api/pegawai", route('api/PegawaiController@deleteAll'))
 // . Api
 
 router.get("*", route('api/HomeController@notFound'))

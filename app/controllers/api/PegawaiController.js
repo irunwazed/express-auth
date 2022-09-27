@@ -4,19 +4,21 @@ import {
 	validationResult
 } from "express-validator";
 
-export default class UsersController {
+const table = db.pegawai;
+
+export default class PegawaiController {
 	static async getData(req, res) {
-		const username = req.query.username;
-		var condition = username ?
+		const nama = req.query.nama;
+		var condition = nama ?
 			{
-				username: {
-					$regex: new RegExp(username),
+				nama: {
+					$regex: new RegExp(nama),
 					$options: "i",
 				},
 			} :
 			{};
 
-		db.users
+		table
 			.find(condition)
 			.then((data) => {
 				res.send(data);
@@ -31,7 +33,7 @@ export default class UsersController {
 	static async getOneData(req, res) {
 		let id = req.params.id;
 
-		db.users
+		table
 			.findById(id)
 			.then((data) => {
 				if (!data)
@@ -55,42 +57,35 @@ export default class UsersController {
 			});
 		}
 
-		let username = req.body.username;
-		let password = req.body.password;
-		let name = req.body.name ? req.body.name : "";
-		let nik = req.body.nik ? req.body.nik : "";
+		let nama = req.body.nama;
+		let login_id = req.body.login_id;
 
-		const users = new db.users({
-			username: username,
-			password: bcrypt.hashSync(password, 10),
-			profil: {
-				name: name,
-				nik: nik,
-			},
-		});
+		// let user = await db.users.findById(login_id);
 
-		users
-			.save(users)
-			.then((data) => {
-				// console.log(data);
-				res.send(data);
-			})
-			.catch((err) => {
-				res.status(500).send({
-					message: err.message,
-					req: username,
-				});
+		const pegawai = new db.pegawai();
+		pegawai.nama = nama;
+		pegawai.login_id = login_id;
+
+		try{
+
+			let result = await pegawai.save();
+			res.send(result);
+		}catch(err){
+			console.log(err.message);
+			res.status(500).send({
+				message: err.message,
 			});
+		}
 	}
 
 	static async update(req, res) {
-		let username = req.body.username;
+		let nama = req.body.nama;
 		let id = req.params.id;
 
-		db.users
+		table
 			.findByIdAndUpdate(
 				id, {
-					username,
+					nama,
 				}, {
 					useFindAndModify: false,
 				}
@@ -115,7 +110,7 @@ export default class UsersController {
 	static async delete(req, res) {
 		let id = req.params.id;
 
-		db.users
+		table
 			.findByIdAndRemove(id)
 			.then((data) => {
 				if (!data) {
@@ -136,7 +131,7 @@ export default class UsersController {
 	}
 
 	static async deleteAll(req, res) {
-		db.users
+		table
 			.deleteMany({})
 			.then((data) => {
 				res.send({
@@ -150,50 +145,4 @@ export default class UsersController {
 			});
 	}
 
-	static async changePassword(req, res){
-		let session = req.setSession;
-		let password = req.body.password;
-		let passwordReset = req.body.passwordReset;
-		let passwordResetValid = req.body.passwordResetValid;
-
-		if(password == passwordResetValid) return res.status(412).send({
-			message: "Password same with new password!",
-		}); 
-
-		if(passwordReset != passwordResetValid) return res.status(412).send({
-			message: "Password reset not same!",
-		}); 
-
-		let user = await db.users.findById(session.id);
-		let userAll = await db.users.find({});
-
-		if(!user.id) return res.status(401).send({
-			message: "User not found. please login again!",
-		});
-
-		if (!bcrypt.compareSync(password, user.password)) return res.status(401).send({
-			message: "wrong password!",
-		});
-
-		try{
-			let status = await db.users.findByIdAndUpdate(session.id, {
-				password: bcrypt.hashSync(passwordReset, 10),
-			}, {
-				useFindAndModify: false,
-			});
-
-			if(!status) return res.status(401).send({
-				message: "Change user fail!",
-			});
-			return res.status(200).send({
-				message: "Change user success!",
-			});
-		}catch(err){
-			return res.status(500).send({
-				message: "User cancel change password!",
-			});
-		}
-		
-		
-	}
 }

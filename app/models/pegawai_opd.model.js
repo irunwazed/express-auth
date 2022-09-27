@@ -1,21 +1,19 @@
 import mongoose from "mongoose";
+var Schema = mongoose.Schema;
 
 module.exports = mongoose => {
   const schema = mongoose.Schema(
     {
-      username: {
-				type: String,
+      opd_id: [
+				{type: Schema.Types.ObjectId, ref: 'opd'}
+			],
+      pegawai_id: [
+				{type: Schema.Types.ObjectId, ref: 'pegawai'}
+			],
+			level: {
+				type: Number,
 				required: true,
-			},
-      password: {
-				type: String,
-				required: true,
-			},
-      level: Number,
-      profil: {
-        name: String,
-        nik: String,
-      }
+			}
     },
     { timestamps: true }
   );
@@ -26,7 +24,7 @@ module.exports = mongoose => {
     return object;
   });
 
-  const Users = mongoose.model('login', schema);
+  const Pegawai = mongoose.model('pegawai_opd', schema);
 
-  return Users
+  return Pegawai
 }
