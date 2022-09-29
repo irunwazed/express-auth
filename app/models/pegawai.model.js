@@ -8,16 +8,16 @@ module.exports = mongoose => {
 				type: String,
 				required: true,
 			},
-      login_id: {type: Schema.Types.ObjectId, ref: 'login', unique: true},
+      login_id: {type: Schema.Types.ObjectId, ref: 'Login', unique: true},
     },
     { timestamps: true }
   );
 
-  schema.method('toJSON', function() {
-    const {__v, _id, ...object} = this.toObject();
-    object.id = _id;
-    return object;
-  });
+  // schema.method('toJSON', function() {
+  //   const {__v, _id, ...object} = this.toObject();
+  //   object.id = _id;
+  //   return object;
+  // });
 
   const Pegawai = mongoose.model('pegawai', schema);
 

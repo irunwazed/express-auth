@@ -20,13 +20,13 @@ module.exports = mongoose => {
     { timestamps: true }
   );
 
-  schema.method('toJSON', function() {
-    const {__v, _id, ...object} = this.toObject();
-    object.id = _id;
-    return object;
-  });
+  // schema.method('toJSON', function() {
+  //   const {__v, _id, ...object} = this.toObject();
+  //   object.id = _id;
+  //   return object;
+  // });
 
-  const Users = mongoose.model('login', schema);
+  const Login = mongoose.model('login', schema);
 
-  return Users
+  return Login
 }

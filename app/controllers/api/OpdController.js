@@ -6,7 +6,7 @@ import {
 
 const table = db.pegawai;
 
-export default class PegawaiController {
+export default class OpdController {
 	static async getData(req, res) {
 		const nama = req.query.nama;
 		var condition = nama ?

@@ -9,16 +9,17 @@ export default class UsersController {
 		const username = req.query.username;
 		var condition = username ?
 			{
-				username: {
-					$regex: new RegExp(username),
-					$options: "i",
-				},
+				// username: {
+				// 	$regex: new RegExp(username),
+				// 	$options: "i",
+				// },
 			} :
 			{};
 
 		db.users
 			.find(condition)
 			.then((data) => {
+				// console.log(data);
 				res.send(data);
 			})
 			.catch((err) => {
