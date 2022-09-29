@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 module.exports = mongoose => {
   const schema = mongoose.Schema(
     {
+      kode: String,
       opd_nama: {
 				type: String,
 				required: true,

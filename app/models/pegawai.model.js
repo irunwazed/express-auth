@@ -8,7 +8,7 @@ module.exports = mongoose => {
 				type: String,
 				required: true,
 			},
-      login_id: {type: Schema.Types.ObjectId, ref: 'Login', unique: true},
+      login_id: {type: Schema.Types.ObjectId, ref: 'logins', unique: true},
     },
     { timestamps: true }
   );

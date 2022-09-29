@@ -3,14 +3,14 @@ import request from 'supertest';
 import db from '../app/models';
 import bcrypt from 'bcrypt';
 
-const table = db.pegawai;
+const table = db.opd;
 
 var TOKEN = '';
 var user = {};
 var password = '123456';
 
 
-describe("Pegawai /", () => {
+describe("OPD /", () => {
 
   beforeEach(async () => {
     
@@ -56,20 +56,17 @@ describe("Pegawai /", () => {
   });
 
   test("get load data", async () => {
-    const response = await request(app).get("/api/pegawai").set('Authorization', `Bearer ${TOKEN}`).send({})
+    const response = await request(app).get("/api/opd").set('Authorization', `Bearer ${TOKEN}`).send({})
     .expect(200)
     .expect("Content-Type", /json/);
   })
 
   test("get find id", async () => {
 		// input data
-		let users = await db.users.find({});
-
 		let data2 = {
-			nama: 'admin1',
-			login_id: users[0].id
+			opd_nama: 'BAPPEDA',
 		}
-    const response1 = await request(app).post("/api/pegawai").set('Authorization', `Bearer ${TOKEN}`).send(data2)
+    const response1 = await request(app).post("/api/opd").set('Authorization', `Bearer ${TOKEN}`).send(data2)
     .expect(200)
     .expect("Content-Type", /json/);
 		// . input data
@@ -79,7 +76,7 @@ describe("Pegawai /", () => {
     expect(data[0].id).toBeDefined();
     data = data[0]
 
-    const response = await request(app).get("/api/pegawai/"+data.id).set('Authorization', `Bearer ${TOKEN}`).send({})
+    const response = await request(app).get("/api/opd/"+data.id).set('Authorization', `Bearer ${TOKEN}`).send({})
     .expect(200)
     .expect("Content-Type", /json/);
   })
@@ -87,7 +84,7 @@ describe("Pegawai /", () => {
   test("get create to find id not found", async () => {
 
 		
-    const response = await request(app).get("/api/pegawai/111").set('Authorization', `Bearer ${TOKEN}`).send({})
+    const response = await request(app).get("/api/opd/111").set('Authorization', `Bearer ${TOKEN}`).send({})
     .expect(500)
     .expect("Content-Type", /json/);
   })
@@ -95,13 +92,11 @@ describe("Pegawai /", () => {
   test("post create", async () => {
 
 		let datas = await table.find({});
-		let users = await db.users.find({});
 
 		let data = {
-			nama: 'admin1',
-			login_id: users[0].id
+			opd_nama: 'BAPPEDA',
 		}
-    const response = await request(app).post("/api/pegawai").set('Authorization', `Bearer ${TOKEN}`).send(data)
+    const response = await request(app).post("/api/opd").set('Authorization', `Bearer ${TOKEN}`).send(data)
     .expect(200)
     .expect("Content-Type", /json/);
 
@@ -113,13 +108,11 @@ describe("Pegawai /", () => {
   test("put create to update", async () => {
 
 		// input data
-		let users = await db.users.find({});
 
 		let data = {
-			nama: 'admin1',
-			login_id: users[0].id
+			opd_nama: 'BAPPEDA',
 		}
-    const response1 = await request(app).post("/api/pegawai").set('Authorization', `Bearer ${TOKEN}`).send(data)
+    const response1 = await request(app).post("/api/opd").set('Authorization', `Bearer ${TOKEN}`).send(data)
     .expect(200)
     .expect("Content-Type", /json/);
 		// . input data
@@ -129,14 +122,14 @@ describe("Pegawai /", () => {
     datas = datas[0]
 		let rand = Math.random();
 		data = {
-			nama: 'admintes123'+rand,
+			opd_nama: 'BAPPEDA123'+rand,
 		}
 
-    const response = await request(app).put("/api/pegawai/"+datas.id).set('Authorization', `Bearer ${TOKEN}`).send(data)
+    const response = await request(app).put("/api/opd/"+datas.id).set('Authorization', `Bearer ${TOKEN}`).send(data)
     .expect(200)
     .expect("Content-Type", /json/);
 
 		datas = await table.findById(datas.id);
-		expect(datas.nama).toBe('admintes123'+rand)
+		expect(datas.opd_nama).toBe('BAPPEDA123'+rand)
   })
 })

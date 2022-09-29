@@ -49,6 +49,30 @@ router.put("/api/pegawai/:id", [
 ], route('api/PegawaiController@update'))
 router.delete("/api/pegawai/:id", route('api/PegawaiController@delete'))
 router.delete("/api/pegawai", route('api/PegawaiController@deleteAll'))
+
+router.get("/api/opd", route('api/OpdController@getData'))
+router.get("/api/opd/:id", route('api/OpdController@getOneData'))
+router.post("/api/opd", [
+  check('opd_nama').isLength({ min: 2 }),
+], route('api/OpdController@store'))
+router.put("/api/opd/:id", [
+  check('opd_nama').isLength({ min: 2 }),
+], route('api/OpdController@update'))
+router.delete("/api/opd/:id", route('api/OpdController@delete'))
+router.delete("/api/opd", route('api/OpdController@deleteAll'))
+
+router.get("/api/pegawai-opd", route('api/PegawaiOpdController@getData'))
+router.get("/api/pegawai-opd/:id", route('api/PegawaiOpdController@getOneData'))
+router.post("/api/pegawai-opd", [
+  check('opd_id').exists(),
+  check('pegawai_id').exists(),
+], route('api/PegawaiOpdController@store'))
+router.put("/api/pegawai-opd/:id", [
+  check('opd_id').exists(),
+  check('pegawai_id').exists(),
+], route('api/PegawaiOpdController@update'))
+router.delete("/api/pegawai-opd/:id", route('api/PegawaiOpdController@delete'))
+router.delete("/api/pegawai-opd", route('api/PegawaiOpdController@deleteAll'))
 // . Api
 
 router.get("*", route('api/HomeController@notFound'))

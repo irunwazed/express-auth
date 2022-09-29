@@ -6,12 +6,16 @@ module.exports = mongoose => {
       username: {
 				type: String,
 				required: true,
+        unique: true,
+			},
+      level: {
+				type: Number,
+				required: true,
 			},
       password: {
 				type: String,
 				required: true,
 			},
-      level: Number,
       profil: {
         name: String,
         nik: String,

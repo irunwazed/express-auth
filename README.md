@@ -12,4 +12,5 @@ npm install -g nodemon
 npm install
 npm start
 npm test
+npm run-script seed
 ```

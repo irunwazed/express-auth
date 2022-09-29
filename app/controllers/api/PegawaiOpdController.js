@@ -4,22 +4,59 @@ import {
 	validationResult
 } from "express-validator";
 
-const table = db.opd;
+const table = db.pegawai_opd;
 
-export default class OpdController {
+export default class PegawaiOpdController {
 	static async getData(req, res) {
-		const opd_nama = req.query.opd_nama;
-		var condition = opd_nama ?
+		const nama = req.query.nama;
+		var condition = nama ?
 			{
-				opd_nama: {
-					$regex: new RegExp(opd_nama),
-					$options: "i",
-				},
+				// nama: {
+				// 	$regex: new RegExp(nama),
+				// 	$options: "i",
+				// },
 			} :
 			{};
 
 		table
-			.find(condition)
+			.aggregate([
+				// { $match : { _id: 63351e26990668b7724ef505} },
+				// { $unwind:"$pegawai" },
+				{ $lookup:
+					{
+						from: 'opds',
+						localField: 'opd_id',
+						foreignField: '_id',
+						as: 'opd'
+					},
+				},
+				{ $lookup:
+					{
+						from: 'pegawais',
+						localField: 'pegawai.pegawai_id',
+						foreignField: '_id',
+						as: 'pegawais'
+					},
+				},
+				{ $lookup:
+					{
+						from: 'logins',
+						localField: 'pegawais.login_id',
+						foreignField: '_id',
+						as: 'login'
+					},
+				},
+				// {
+				// 	$project: {
+				// 		nama_opd: "$opd.opd_nama",
+				// 	}
+				// },
+				// {  $match : { $or : [
+				// 	{ 'opd.opd_nama': 'Rumah Sakit Umum Daerah Morowali' },
+				// 	{ 'opd.kode': '1.1' },
+				// ] } }
+			])
+			// .where({})
 			.then((data) => {
 				res.send(data);
 			})
@@ -57,16 +94,17 @@ export default class OpdController {
 			});
 		}
 
-		let opd_nama = req.body.opd_nama;
+		let nama = req.body.nama;
+		let login_id = req.body.login_id;
 
 		// let user = await db.users.findById(login_id);
 
-		const data = new table({
-			opd_nama: opd_nama
-		});
+		const pegawai = new db.pegawai();
+		pegawai.nama = nama;
+		pegawai.login_id = login_id;
 
 		try{
-			let result = await data.save(data);
+			let result = await pegawai.save(pegawai);
 			res.send(result);
 		}catch(err){
 			console.log(err.message);
@@ -77,13 +115,13 @@ export default class OpdController {
 	}
 
 	static async update(req, res) {
-		let opd_nama = req.body.opd_nama;
+		let nama = req.body.nama;
 		let id = req.params.id;
 
 		table
 			.findByIdAndUpdate(
 				id, {
-					opd_nama,
+					nama,
 				}, {
 					useFindAndModify: false,
 				}
